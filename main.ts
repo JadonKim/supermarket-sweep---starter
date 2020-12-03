@@ -14,20 +14,24 @@ function createTextSprite () {
     subTotalSprite.left = 0
 }
 scene.onOverlapTile(SpriteKind.Player, myTiles.tile10, function (sprite, location) {
-	let display = "Subtotal" + subtotal
-    for(let item of sprites.allOfKind(SpriteKind.CartItem)){
-     
+    display = "Subtotal " + subtotal
+    for (let item of sprites.allOfKind(SpriteKind.CartItem)) {
+        cost = sprites.readDataNumber(item, "cost")
+        name = sprites.readDataString(item, "name")
+        display = "" + display + "\n" + name + ": $" + cost
     }
-     game.showLongText(display, DialogLayout.Center)
+    game.showLongText(display, DialogLayout.Center)
+    info.setScore(subtotal)
+    game.over(true)
 })
 function addToCart (grocery: Sprite) {
-    item = sprites.create(grocery.image, SpriteKind.CartItem)
-    item.follow(player)
-    item.x = player.x
-    item.y = player.y
-    itemCost = sprites.readDataNumber(item, "cost")
-    itemWeight = sprites.readDataNumber(item, "weight")
-    itemName = sprites.readDataString(item, "name")
+    item2 = sprites.create(grocery.image, SpriteKind.CartItem)
+    item2.follow(player)
+    item2.x = player.x
+    item2.y = player.y
+    itemCost = sprites.readDataNumber(grocery, "cost")
+    itemWeight = sprites.readDataNumber(grocery, "weight")
+    itemName = sprites.readDataString(grocery, "name")
     subtotal = subtotal + itemCost
     subTotalSprite.setText("$" + subtotal)
     // Update the moving speed
@@ -37,10 +41,10 @@ function addToCart (grocery: Sprite) {
         speed = 5
     }
     controller.moveSprite(player, speed, speed)
-    //store information inside cart item for grocery list
-    let name = sprites.readDataString(grocery, "name")
-    sprites.setDataNumber(item ,"cost", itemCost )
-    sprites.setDataString(item ,"name", itemName )
+    // store information inside cart item for grocery list
+    name2 = sprites.readDataString(grocery, "name")
+    sprites.setDataNumber(item2, "cost", itemCost)
+    sprites.setDataString(item2, "name", itemName)
 }
 function createProduct (img2: Image, cost: number, weight: number, name: string) {
     p = sprites.create(img2, SpriteKind.Grocery)
@@ -55,12 +59,16 @@ function createAllProducts () {
     }
 }
 let p: Sprite = null
+let name2 = ""
 let weight = 0
-let subtotal = 0
-let itemName: string = null
+let itemName = ""
 let itemWeight = 0
 let itemCost = 0
-let item: Sprite = null
+let item2: Sprite = null
+let name = ""
+let cost = 0
+let subtotal = 0
+let display = ""
 let subTotalSprite: TextSprite = null
 let player: Sprite = null
 let groceryCosts: number[] = []
@@ -317,3 +325,4 @@ tiles.placeOnTile(player, tiles.getTileLocation(1, 3))
 scene.cameraFollowSprite(player)
 createAllProducts()
 createTextSprite()
+info.startCountdown(30)
